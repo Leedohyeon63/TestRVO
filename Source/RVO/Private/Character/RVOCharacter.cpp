@@ -63,5 +63,15 @@ void ARVOCharacter::MoveToTarget()
 
 void ARVOCharacter::SetRVOAvoidanceEnabled(bool bEnabled)
 {
+    UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+    if (MovementComponent)
+    {
+        MovementComponent->bUseRVOAvoidance = bEnabled;
+    }
+}
+
+void ARVOCharacter::SetAttackTarget(AActor* InTargetActor)
+{
+    TargetActor = InTargetActor;
 }
 

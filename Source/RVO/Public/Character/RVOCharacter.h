@@ -26,10 +26,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RVO")
     void SetRVOAvoidanceEnabled(bool bEnabled);
 
+    UFUNCTION(BlueprintCallable, Category = "RVO")
+    void SetAttackTarget(AActor* InTargetActor);
+
 public:
     // 이동할 타겟 액터
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Movement")
-    AActor* TargetActor;
+    TObjectPtr<AActor> TargetActor = nullptr;
 
     // RVO 회피 설정
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RVO")
