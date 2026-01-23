@@ -26,7 +26,9 @@ public:
     TSubclassOf<AActor> SpawnActor;
 
 
-    UPROPERTY(EditAnywhere, Category = "Spawn|time")
+    UPROPERTY(EditA
+        
+        nywhere, Category = "Spawn|time")
     float SpawnInterval_LV1 = 0.0f;
 
     UPROPERTY(EditAnywhere, Category = "Spawn|time")
