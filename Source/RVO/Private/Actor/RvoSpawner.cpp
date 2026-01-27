@@ -26,7 +26,10 @@ void ARvoSpawner::BeginPlay()
 
 void ARvoSpawner::SpawnActorWave()
 {
-    if (!SpawnActorWave) return;
+    if (!SpawnActor)
+    {
+        return; 
+    }
 
     FVector RandomLocation = GetActorLocation() + FVector(
         UKismetMathLibrary::RandomFloatInRange(-SpawnRange.X, SpawnRange.X),
