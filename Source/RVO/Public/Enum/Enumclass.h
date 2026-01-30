@@ -1,0 +1,17 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/**
+ * 
+ */
+UENUM(BlueprintType)
+enum class EUnitState : uint8
+{
+    Idle        UMETA(DisplayName = "Idle"),        
+    Combat      UMETA(DisplayName = "Combat"),      
+    Move        UMETA(DisplayName = "Move"),  
+    Dead        UMETA(DisplayName = "Dead")         
+};
