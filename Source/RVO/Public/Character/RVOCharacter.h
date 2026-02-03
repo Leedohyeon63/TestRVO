@@ -35,6 +35,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RVO")
     void SetAttackTarget(AActor* InTargetActor);
 
+    UPROPERTY(EditAnywhere, Category = "AI")
+    FGameplayTag UnitTag;
 
 public:
     // 이동할 타겟 액터
