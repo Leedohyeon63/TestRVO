@@ -3,6 +3,7 @@
 
 #include "BTRangeCheck.h"
 #include "AIController.h"
+#include "AI/TestDetourCrowdAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameplayTagAssetInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,7 +19,8 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+    ATestDetourCrowdAIController* AIC = Cast<ATestDetourCrowdAIController>(OwnerComp.GetAIOwner());
+    APawn* ControllingPawn = AIC ? AIC->GetPawn() : nullptr;
     if (!ControllingPawn) return;
 
     UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
@@ -48,6 +50,19 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
         }
     }
 
+    // 블랙보드 값 설정
     Blackboard->SetValueAsObject(TargetActorKey.SelectedKeyName, ClosestTarget);
     Blackboard->SetValueAsBool(IsInRangeKey.SelectedKeyName, bInRange);
+
+    if (AIC)
+    {
+        if (bInRange)
+        {
+            AIC->SetUnitState(EUnitState::Combat);
+        }
+        else
+        {
+            AIC->SetUnitState(EUnitState::Move);
+        }
+    }
 }
