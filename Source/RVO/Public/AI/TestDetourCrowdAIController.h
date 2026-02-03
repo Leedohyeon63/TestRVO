@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DetourCrowdAIController.h"
+#include "Enum/Enumclass.h"
 #include "TestDetourCrowdAIController.generated.h"
 
 /**
@@ -28,11 +29,18 @@ public:
 
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	void SetUnitState(EUnitState NewState);
+
 private:
-	//블랙보드 컴포넌트 (데이터 저장소)
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<class UBehaviorTree> BTAsset;
+
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<class UBlackboardComponent> BlackboardComp;
 
-	//현재 빙의한 유닛의 팀 정보 캐싱
+	const FName StateKeyName = TEXT("State");
+
 	FGenericTeamId CachedTeamId;
 };

@@ -31,15 +31,8 @@ void ARVOCharacter::BeginPlay()
 {
 	Super::BeginPlay();
     AIController = Cast<AAIController>(GetController());
-
-    if (AIController && TargetActor)
-    {
-        FTimerHandle DelayHandle;
-        GetWorldTimerManager().SetTimer(DelayHandle, this, &ARVOCharacter::MoveToTarget, 2.0f, false);
-    }
 }
 
-// Called to bind functionality to input
 void ARVOCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -48,7 +41,11 @@ void ARVOCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void ARVOCharacter::MoveToTarget()
 {
-    if (!AIController || !TargetActor) return;
+    if (!AIController || !TargetActor)
+    { 
+        UE_LOG(LogTemp, Display, TEXT("targetactormissing"));
+        return;
+    }
 
     AIController->MoveToActor(
         TargetActor,    // 목표 액터

@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "NativeGameplayTags.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayTagAssetInterface.h"
 #include "RVOCharacter.generated.h"
 
 UCLASS()
