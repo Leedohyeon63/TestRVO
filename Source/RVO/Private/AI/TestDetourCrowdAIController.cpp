@@ -6,6 +6,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Navigation/CrowdFollowingComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 
 ATestDetourCrowdAIController::ATestDetourCrowdAIController()
 {
@@ -15,26 +16,37 @@ ATestDetourCrowdAIController::ATestDetourCrowdAIController()
 
 void ATestDetourCrowdAIController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn); // Super를 먼저 호출하여 내부 시스템을 초기화합니다.
-
-	UE_LOG(LogTemp, Warning, TEXT("OnPossess Called for: %s"), *InPawn->GetName());
+	Super::OnPossess(InPawn);
 
 	if (BTAsset)
 	{
 		if (RunBehaviorTree(BTAsset))
 		{
-			UE_LOG(LogTemp, Log, TEXT("BT실행 성공"));
+			UE_LOG(LogTemp, Log, TEXT("메인 BT 실행 성공"));
 			SetUnitState(EUnitState::Move);
+
+			ARVOCharacter* RVOChar = Cast<ARVOCharacter>(InPawn);
+			if (RVOChar && RVOChar->SubBTAsset)
+			{
+				UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(BrainComponent);
+				if (BTComp)
+				{
+					FGameplayTag CombatTag = FGameplayTag::RequestGameplayTag(TEXT("AI.State.Combat"));
+
+					BTComp->SetDynamicSubtree(CombatTag, RVOChar->SubBTAsset);
+					UE_LOG(LogTemp, Log, TEXT("%s : 다이나믹트리(%s)"),
+						*InPawn->GetName(), *RVOChar->SubBTAsset->GetName());
+				}
+			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("RunBehaviorTree 실패!"));
+			UE_LOG(LogTemp, Error, TEXT("FailRunBehaviorTree"));
 		}
 	}
 	else
 	{
-		// 십중팔구 이 로그가 찍힐 것입니다. 블루프린트에서 할당을 확인하세요.
-		UE_LOG(LogTemp, Error, TEXT("BTAsset이 Null입니다! 블루프린트 할당을 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("BTAssetNull"));
 	}
 }
 

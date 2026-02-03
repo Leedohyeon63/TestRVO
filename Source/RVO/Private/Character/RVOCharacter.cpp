@@ -3,7 +3,9 @@
 
 #include "Character/RVOCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "AIController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARVOCharacter::ARVOCharacter()
 {
@@ -24,6 +26,10 @@ ARVOCharacter::ARVOCharacter()
         // 캐릭터 회피 우선 순위(0.0f - 1.0f, 1에 가까울 수록 가중치 높음)
         MovementComponent->AvoidanceWeight = AvoidanceWeight;
     }
+}
+
+void ARVOCharacter::SetMoveSpeed()
+{
 }
 
 // Called when the game starts or when spawned
@@ -55,7 +61,27 @@ void ARVOCharacter::MoveToTarget()
         false           // 목적지를 네비게이션 메시에 투영(Projection) 하지 않음
     );
 
-    UE_LOG(LogTemp, Display, TEXT("%s Moving to target: %s"), *GetName(), *TargetActor->GetName());
+}
+
+bool ARVOCharacter::FocusTarget(AActor* InTargetActor, float DeltaTime, float TurnSpeed)
+{
+    if (!InTargetActor || !IsValid(InTargetActor))
+    {
+        return false;
+    }
+
+    FVector Start = GetActorLocation();
+    FVector End = InTargetActor->GetActorLocation(); // InTargetActor 사용
+
+    FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(Start, End);
+    FRotator CurrentRot = GetActorRotation();
+
+    FRotator NewRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaTime, TurnSpeed);
+
+    SetActorRotation(FRotator(CurrentRot.Pitch, NewRot.Yaw, CurrentRot.Roll));
+
+    float DeltaYaw = FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRot.Yaw, TargetRot.Yaw));
+    return DeltaYaw < 5.0f;
 }
 
 void ARVOCharacter::SetRVOAvoidanceEnabled(bool bEnabled)

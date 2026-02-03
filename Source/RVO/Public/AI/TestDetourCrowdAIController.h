@@ -6,7 +6,6 @@
 #include "DetourCrowdAIController.h"
 #include "Enum/Enumclass.h"
 #include "TestDetourCrowdAIController.generated.h"
-
 /**
  * 
  */
@@ -26,8 +25,8 @@ protected:
 	virtual void OnUnPossess() override;
 
 public:
-
 	virtual FGenericTeamId GetGenericTeamId() const override;
+
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "AI")

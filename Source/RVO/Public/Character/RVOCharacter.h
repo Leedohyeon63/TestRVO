@@ -16,7 +16,7 @@ class RVO_API ARVOCharacter : public ACharacter
 
 public:
 	ARVOCharacter();
-
+    void SetMoveSpeed();
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -25,12 +25,16 @@ public:
     UFUNCTION(BlueprintCallable, Category = "AI Movement")
     void MoveToTarget();
 
+    UFUNCTION(BlueprintCallable, Category = "AI Movement")
+    bool FocusTarget(AActor* InTargetActor, float DeltaTime, float TurnSpeed);
+
     // RVO 회피 활성화/비활성화
     UFUNCTION(BlueprintCallable, Category = "RVO")
     void SetRVOAvoidanceEnabled(bool bEnabled);
 
     UFUNCTION(BlueprintCallable, Category = "RVO")
     void SetAttackTarget(AActor* InTargetActor);
+
 
 public:
     // 이동할 타겟 액터
@@ -44,6 +48,9 @@ public:
     // RVO 계급 설정
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RVO")
     float AvoidanceWeight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+    TObjectPtr<class UBehaviorTree> SubBTAsset;
 
 private:
     // AI 컨트롤러 캐싱
