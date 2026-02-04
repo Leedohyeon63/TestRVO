@@ -14,7 +14,7 @@ class RVO_API ATestDetourCrowdAIController : public ADetourCrowdAIController
 {
 	GENERATED_BODY()
 public:
-	ATestDetourCrowdAIController();
+	ATestDetourCrowdAIController(const FObjectInitializer& ObjectInitializer);
 
 protected:
 

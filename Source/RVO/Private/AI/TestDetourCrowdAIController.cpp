@@ -8,10 +8,10 @@
 #include "Navigation/CrowdFollowingComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 
-ATestDetourCrowdAIController::ATestDetourCrowdAIController()
+ATestDetourCrowdAIController::ATestDetourCrowdAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
-
 }
 
 void ATestDetourCrowdAIController::OnPossess(APawn* InPawn)
@@ -22,6 +22,12 @@ void ATestDetourCrowdAIController::OnPossess(APawn* InPawn)
 	if (Unit && GetBlackboardComponent())
 	{
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("Range"), Unit->DetectRange);
+	}
+
+	UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
+	if (CrowdComp)
+	{
+		CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
 	}
 
 	if (BTAsset)
@@ -76,15 +82,16 @@ void ATestDetourCrowdAIController::SetUnitState(EUnitState NewState)
 	if (Blackboard)
 	{
 		Blackboard->SetValueAsEnum(StateKeyName, static_cast<uint8>(NewState));
-		if (ARVOCharacter* RVOChar = Cast<ARVOCharacter>(GetPawn()))
+		UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
+		if (CrowdComp)
 		{
 			if (NewState == EUnitState::Combat || NewState == EUnitState::Dead)
 			{
-				RVOChar->SetRVOAvoidanceEnabled(false);
+				CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low); 
 			}
 			else
 			{
-				RVOChar->SetRVOAvoidanceEnabled(true);
+				CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
 			}
 		}
 	}

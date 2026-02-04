@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameplayTagAssetInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "subsystem/UnitSubsystem.h"
 
 UBTRangeCheck::UBTRangeCheck()
 {
@@ -21,8 +22,9 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
     ATestDetourCrowdAIController* AIC = Cast<ATestDetourCrowdAIController>(OwnerComp.GetAIOwner());
-    APawn* ControllingPawn = AIC ? AIC->GetPawn() : nullptr;
-    if (!ControllingPawn)
+
+    APawn* ControllPawn = OwnerComp.GetAIOwner() ? OwnerComp.GetAIOwner()->GetPawn() : nullptr;
+    if (!ControllPawn)
     {
         return;
     }
@@ -33,49 +35,49 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
         return;
     }
 
-    float Range = Blackboard->GetValueAsFloat(RangeKey.SelectedKeyName);
-
-    // 1. 내(Self) 진영 확인
-    IGameplayTagAssetInterface* SelfInterface = Cast<IGameplayTagAssetInterface>(ControllingPawn);
-    if (!SelfInterface)
+    UUnitSubsystem* UnitSubSystem = GetWorld()->GetSubsystem<UUnitSubsystem>();
+    if (!UnitSubSystem)
     {
         return;
     }
 
-    // 내가 아군이면 적군 태그를, 내가 적군이면 아군 태그를 타겟으로 설정합니다.
-    FGameplayTag EnemyTag = SelfInterface->HasMatchingGameplayTag(UnitTags::Unit_FriendorFoe_Friend)
+    float Range = Blackboard->GetValueAsFloat(RangeKey.SelectedKeyName);
+    float RangeSq = Range * Range;
+
+    IGameplayTagAssetInterface* UnitInterface = Cast<IGameplayTagAssetInterface>(ControllPawn);
+    if (!UnitInterface)
+    {
+        return;
+    }
+
+    FGameplayTag EnemyTag = UnitInterface->
+        HasMatchingGameplayTag(UnitTags::Unit_FriendorFoe_Friend)
         ? UnitTags::Unit_FriendorFoe_Foe
         : UnitTags::Unit_FriendorFoe_Friend;
 
-    TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UGameplayTagAssetInterface::StaticClass(), FoundActors);
+    const TArray<TWeakObjectPtr<AActor>>& EnemyList = UnitSubSystem->GetUnitsByTeam(EnemyTag);
 
     AActor* ClosestTarget = nullptr;
-    float MinDistance = Range;
+    float MinDistSq = RangeSq;
     bool bInRange = false;
 
-    for (AActor* Actor : FoundActors)
-    {
-        if (Actor == ControllingPawn)
-        {
-            continue;
-        }
+    FVector MyLocation = ControllPawn->GetActorLocation();
 
-        IGameplayTagAssetInterface* TargetInterface = Cast<IGameplayTagAssetInterface>(Actor);
-        // 2. 타겟이 나의 반대 진영 태그를 가지고 있는지 확인
-        if (TargetInterface && TargetInterface->HasMatchingGameplayTag(EnemyTag))
+    for (const TWeakObjectPtr<AActor>& EnemyPtr : EnemyList)
+    {
+        AActor* Enemy = EnemyPtr.Get();
+        if (!Enemy) continue;
+
+        float DistSq = FVector::DistSquared(MyLocation, Enemy->GetActorLocation());
+
+        if (DistSq <= MinDistSq)
         {
-            float Distance = ControllingPawn->GetDistanceTo(Actor);
-            if (Distance <= MinDistance)
-            {
-                MinDistance = Distance;
-                ClosestTarget = Actor;
-                bInRange = true;
-            }
+            MinDistSq = DistSq;
+            ClosestTarget = Enemy;
+            bInRange = true;
         }
     }
 
-    // 블랙보드 및 AI 상태 업데이트
     Blackboard->SetValueAsObject(TargetActorKey.SelectedKeyName, ClosestTarget);
     Blackboard->SetValueAsBool(IsInRangeKey.SelectedKeyName, bInRange);
 

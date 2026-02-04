@@ -6,26 +6,32 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "subsystem/UnitSubsystem.h"
 #include "AIController.h"
 
 ARVOCharacter::ARVOCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-    AvoidanceRadius = 90.0f;
-    AvoidanceWeight = 0.5f;
+    //AvoidanceRadius = 90.0f;
+    //AvoidanceWeight = 0.5f;
+    //UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+    //if (MovementComponent)
+    //{
+    //    // RVO 충돌 회피 알고리즘 활성화 여부
+    //    MovementComponent->bUseRVOAvoidance = true;
+
+    //    // AI가 다른 오브젝트를 감지하고 회피를 시작하는 반경
+    //    MovementComponent->AvoidanceConsiderationRadius = AvoidanceRadius;
+
+    //    // 캐릭터 회피 우선 순위(0.0f - 1.0f, 1에 가까울 수록 가중치 높음)
+    //    MovementComponent->AvoidanceWeight = AvoidanceWeight;
+    //}
 
     UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
     if (MovementComponent)
     {
-        // RVO 충돌 회피 알고리즘 활성화 여부
-        MovementComponent->bUseRVOAvoidance = true;
-
-        // AI가 다른 오브젝트를 감지하고 회피를 시작하는 반경
-        MovementComponent->AvoidanceConsiderationRadius = AvoidanceRadius;
-
-        // 캐릭터 회피 우선 순위(0.0f - 1.0f, 1에 가까울 수록 가중치 높음)
-        MovementComponent->AvoidanceWeight = AvoidanceWeight;
+        MovementComponent->bUseRVOAvoidance = false;
     }
 }
 
@@ -38,6 +44,20 @@ void ARVOCharacter::BeginPlay()
 {
 	Super::BeginPlay();
     AIController = Cast<AAIController>(GetController());
+    if (UUnitSubsystem* Subsystem = GetWorld()->GetSubsystem<UUnitSubsystem>())
+    {
+        Subsystem->RegisterUnit(this, UnitTag);
+    }
+}
+
+void ARVOCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (UUnitSubsystem* Subsystem = GetWorld()->GetSubsystem<UUnitSubsystem>())
+    {
+        Subsystem->UnregisterUnit(this, UnitTag);
+    }
+
+    Super::EndPlay(EndPlayReason);
 }
 
 void ARVOCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -67,14 +87,14 @@ bool ARVOCharacter::FocusTarget(AActor* InTargetActor, float DeltaTime, float Tu
     return DeltaYaw < 5.0f;
 }
 
-void ARVOCharacter::SetRVOAvoidanceEnabled(bool bEnabled)
-{
-    UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
-    if (MovementComponent)
-    {
-        MovementComponent->bUseRVOAvoidance = bEnabled;
-    }
-}
+//void ARVOCharacter::SetRVOAvoidanceEnabled(bool bEnabled)
+//{
+//    UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+//    if (MovementComponent)
+//    {
+//        MovementComponent->bUseRVOAvoidance = bEnabled;
+//    }
+//}
 
 void ARVOCharacter::SetAttackTarget(AActor* InTargetActor)
 {
