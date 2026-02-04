@@ -3,15 +3,16 @@
 
 #include "Character/RVOCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "AIController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AIController.h"
 
 ARVOCharacter::ARVOCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-    AvoidanceRadius = 300.0f;
+    AvoidanceRadius = 90.0f;
     AvoidanceWeight = 0.5f;
 
     UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
@@ -42,24 +43,6 @@ void ARVOCharacter::BeginPlay()
 void ARVOCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-void ARVOCharacter::MoveToTarget()
-{
-    if (!AIController || !TargetActor)
-    { 
-        UE_LOG(LogTemp, Display, TEXT("targetactormissing"));
-        return;
-    }
-
-    AIController->MoveToActor(
-        TargetActor,    // 목표 액터
-        150.0f,         // 도착 판정 반경
-        true,           // 목표 영역이 겹치면 도착으로 간주
-        true,           // 경로 탐색 사용
-        false           // 목적지를 네비게이션 메시에 투영(Projection) 하지 않음
-    );
 
 }
 
@@ -96,5 +79,44 @@ void ARVOCharacter::SetRVOAvoidanceEnabled(bool bEnabled)
 void ARVOCharacter::SetAttackTarget(AActor* InTargetActor)
 {
     TargetActor = InTargetActor;
+    if (!AIController)
+    {
+        AIController = Cast<AAIController>(GetController());
+    }
+
+    if (AIController)
+    {
+        UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
+        if (BBComp)
+        {
+            BBComp->SetValueAsObject(TEXT("AttackTarget"), InTargetActor);
+        }
+    }
+}
+
+void ARVOCharacter::TestAttack()
+{
+    if (TargetActor)
+    {
+        FVector MyLoc = GetActorLocation();
+        FVector TargetLoc = TargetActor->GetActorLocation();
+
+        MyLoc.Z = 0.0f;
+        TargetLoc.Z = 0.0f;
+
+        FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(MyLoc, TargetLoc);
+
+        SetActorRotation(LookAtRot);
+
+        if (GetController())
+        {
+            GetController()->SetControlRotation(LookAtRot);
+        }
+    }
+
+    if (AttackMontage)
+    {
+        PlayAnimMontage(AttackMontage);
+    }
 }
 

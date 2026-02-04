@@ -8,7 +8,7 @@
 
 UBTTFocusTarget::UBTTFocusTarget()
 {
-	NodeName = "Move";
+	NodeName = "Focus";
 
 }
 

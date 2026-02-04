@@ -16,13 +16,5 @@ EBTNodeResult::Type UBTTMove::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uin
     AAIController* AIC = OwnerComp.GetAIOwner();
     if (!AIC) return EBTNodeResult::Failed;
 
-    ARVOCharacter* Unit = Cast<ARVOCharacter>(AIC->GetPawn());
-    if (!Unit)
-    {
-        return EBTNodeResult::Failed;
-    }
-
-    Unit->MoveToTarget();
-
     return EBTNodeResult::Succeeded;
 }

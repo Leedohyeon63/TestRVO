@@ -21,9 +21,8 @@ protected:
 
 public:
     UPROPERTY(EditAnywhere, Category = "AI")
-    float SearchRange = 1000.0f;
-
-    // 수정: 일반 Tag 대신 Gameplay Tag 사용
+    struct FBlackboardKeySelector RangeKey; 
+    
     UPROPERTY(EditAnywhere, Category = "AI")
     FGameplayTag TargetTag;
 

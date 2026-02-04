@@ -97,7 +97,7 @@ void UWaveComponent::SpawnEnemy(TSubclassOf<ARVOCharacter> EnemyClass)
 
     if (SpawnedEnemy)
     {
-        SpawnedEnemy->SetLifeSpan(10.0f);
+       // SpawnedEnemy->SetLifeSpan(10.0f);
         EnemyCount++;
         UE_LOG(LogTemp, Warning, TEXT("Enemy: %d"), EnemyCount);
         SpawnedEnemy->OnDestroyed.AddDynamic(this, &UWaveComponent::OnEnemyDestroyed);

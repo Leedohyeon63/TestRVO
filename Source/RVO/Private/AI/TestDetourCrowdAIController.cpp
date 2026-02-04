@@ -18,6 +18,12 @@ void ATestDetourCrowdAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	ARVOCharacter* Unit = Cast<ARVOCharacter>(InPawn);
+	if (Unit && GetBlackboardComponent())
+	{
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("Range"), Unit->DetectRange);
+	}
+
 	if (BTAsset)
 	{
 		if (RunBehaviorTree(BTAsset))
@@ -70,10 +76,16 @@ void ATestDetourCrowdAIController::SetUnitState(EUnitState NewState)
 	if (Blackboard)
 	{
 		Blackboard->SetValueAsEnum(StateKeyName, static_cast<uint8>(NewState));
-
-		if (NewState == EUnitState::Dead)
+		if (ARVOCharacter* RVOChar = Cast<ARVOCharacter>(GetPawn()))
 		{
-			// 필요한 경우 여기서 BrainComponent 중지 가능
+			if (NewState == EUnitState::Combat || NewState == EUnitState::Dead)
+			{
+				RVOChar->SetRVOAvoidanceEnabled(false);
+			}
+			else
+			{
+				RVOChar->SetRVOAvoidanceEnabled(true);
+			}
 		}
 	}
 }

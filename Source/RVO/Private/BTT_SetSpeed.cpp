@@ -14,14 +14,5 @@ EBTNodeResult::Type UBTT_SetSpeed::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
     AAIController* AIC = OwnerComp.GetAIOwner();
     if (!AIC) return EBTNodeResult::Failed;
-
-    ARVOCharacter* Unit = Cast<ARVOCharacter>(AIC->GetPawn());
-    if (!Unit)
-    {
-        return EBTNodeResult::Failed;
-    }
-
-    Unit->MoveToTarget();
-
     return EBTNodeResult::Succeeded;
 }
