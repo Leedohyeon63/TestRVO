@@ -22,6 +22,7 @@ void ATestDetourCrowdAIController::OnPossess(APawn* InPawn)
 	if (Unit && GetBlackboardComponent())
 	{
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("Range"), Unit->DetectRange);
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("AttackRange"), Unit->AttackRange);
 	}
 
 	UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());

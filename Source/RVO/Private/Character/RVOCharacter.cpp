@@ -20,14 +20,11 @@ ARVOCharacter::ARVOCharacter()
     //{
     //    // RVO 충돌 회피 알고리즘 활성화 여부
     //    MovementComponent->bUseRVOAvoidance = true;
-
     //    // AI가 다른 오브젝트를 감지하고 회피를 시작하는 반경
     //    MovementComponent->AvoidanceConsiderationRadius = AvoidanceRadius;
-
     //    // 캐릭터 회피 우선 순위(0.0f - 1.0f, 1에 가까울 수록 가중치 높음)
     //    MovementComponent->AvoidanceWeight = AvoidanceWeight;
     //}
-
     UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
     if (MovementComponent)
     {

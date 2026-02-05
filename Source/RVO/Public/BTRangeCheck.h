@@ -24,6 +24,9 @@ public:
     struct FBlackboardKeySelector RangeKey; 
     
     UPROPERTY(EditAnywhere, Category = "AI")
+    struct FBlackboardKeySelector AttackRangeKey;
+
+    UPROPERTY(EditAnywhere, Category = "AI")
     FGameplayTag TargetTag;
 
     UPROPERTY(EditAnywhere, Category = "AI")
@@ -31,4 +34,7 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "AI")
     struct FBlackboardKeySelector IsInRangeKey;
+
+    UPROPERTY(EditAnywhere, Category = "AI")
+    struct FBlackboardKeySelector IsInAttackRangeKey;
 };

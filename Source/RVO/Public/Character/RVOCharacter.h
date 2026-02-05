@@ -65,6 +65,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
     float DetectRange = 500.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+    float AttackRange = 250.0f;
 private:
     // AI 컨트롤러 캐싱
     class AAIController* AIController = nullptr;

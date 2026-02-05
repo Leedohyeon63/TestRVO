@@ -44,6 +44,9 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
     float Range = Blackboard->GetValueAsFloat(RangeKey.SelectedKeyName);
     float RangeSq = Range * Range;
 
+    float AttackRange = Blackboard->GetValueAsFloat(AttackRangeKey.SelectedKeyName);
+    float AttackRangeSq = AttackRange * AttackRange;
+
     IGameplayTagAssetInterface* UnitInterface = Cast<IGameplayTagAssetInterface>(ControllPawn);
     if (!UnitInterface)
     {
@@ -60,6 +63,7 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
     AActor* ClosestTarget = nullptr;
     float MinDistSq = RangeSq;
     bool bInRange = false;
+    bool bInAttackRange = false;
 
     FVector MyLocation = ControllPawn->GetActorLocation();
 
@@ -78,8 +82,17 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
         }
     }
 
+    if (bInRange && ClosestTarget)
+    {
+        if (MinDistSq <= AttackRangeSq)
+        {
+            bInAttackRange = true;
+        }
+    }
+
     Blackboard->SetValueAsObject(TargetActorKey.SelectedKeyName, ClosestTarget);
     Blackboard->SetValueAsBool(IsInRangeKey.SelectedKeyName, bInRange);
+    Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bInAttackRange);
 
     if (AIC)
     {
