@@ -1,102 +1,116 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BTRangeCheck.h"
-#include "AIController.h"
-#include "Tag/UnitTag.h"
 #include "AI/TestDetourCrowdAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameplayTagAssetInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "subsystem/UnitSubsystem.h"
+#include "Components/CapsuleComponent.h"
+#include "GameplayTagAssetInterface.h"
+#include "Tag/UnitTag.h"
+#include "DrawDebugHelpers.h"
 
 UBTRangeCheck::UBTRangeCheck()
 {
-	NodeName = "RangeCheck";
+	NodeName = "RangeCheck_Optimized";
 	Interval = 0.5f;
 	RandomDeviation = 0.1f;
 }
 
 void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-    Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    ATestDetourCrowdAIController* AIC = Cast<ATestDetourCrowdAIController>(OwnerComp.GetAIOwner());
+	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    APawn* ControllPawn = OwnerComp.GetAIOwner() ? OwnerComp.GetAIOwner()->GetPawn() : nullptr;
-    if (!ControllPawn)
-    {
-        return;
-    }
+	ATestDetourCrowdAIController* AIC = Cast<ATestDetourCrowdAIController>(OwnerComp.GetAIOwner());
 
-    UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
-    if (!Blackboard)
-    {
-        return;
-    }
+	APawn* ControllPawn = OwnerComp.GetAIOwner() ? OwnerComp.GetAIOwner()->GetPawn() : nullptr;
+	if (!ControllPawn)
+	{
+		return;
+	}
 
-    UUnitSubsystem* UnitSubSystem = GetWorld()->GetSubsystem<UUnitSubsystem>();
-    if (!UnitSubSystem)
-    {
-        return;
-    }
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	if (!Blackboard)
+	{
+		return;
+	}
 
-    float Range = Blackboard->GetValueAsFloat(RangeKey.SelectedKeyName);
-    float RangeSq = Range * Range;
+	UUnitSubsystem* UnitSubSystem = GetWorld()->GetSubsystem<UUnitSubsystem>();
+	if (!UnitSubSystem)
+	{
+		return;
+	}
 
-    float AttackRange = Blackboard->GetValueAsFloat(AttackRangeKey.SelectedKeyName);
-    float AttackRangeSq = AttackRange * AttackRange;
+	float Range = Blackboard->GetValueAsFloat(RangeKey.SelectedKeyName);
+	float RangeSq = Range * Range;
 
-    IGameplayTagAssetInterface* UnitInterface = Cast<IGameplayTagAssetInterface>(ControllPawn);
-    if (!UnitInterface)
-    {
-        return;
-    }
+	float AttackRange = Blackboard->GetValueAsFloat(AttackRangeKey.SelectedKeyName);
+	float AttackRangeSq = AttackRange * AttackRange;
 
-    FGameplayTag EnemyTag = UnitInterface->
-        HasMatchingGameplayTag(UnitTags::Unit_FriendorFoe_Friend)
-        ? UnitTags::Unit_FriendorFoe_Foe
-        : UnitTags::Unit_FriendorFoe_Friend;
+	IGameplayTagAssetInterface* UnitInterface = Cast<IGameplayTagAssetInterface>(ControllPawn);
+	if (!UnitInterface)
+	{
+		return;
+	}
 
-    const TArray<TWeakObjectPtr<AActor>>& EnemyList = UnitSubSystem->GetUnitsByTeam(EnemyTag);
+	FGameplayTag EnemyTag = UnitInterface->
+		HasMatchingGameplayTag(UnitTags::Unit_FriendorFoe_Friend)
+		? UnitTags::Unit_FriendorFoe_Foe
+		: UnitTags::Unit_FriendorFoe_Friend;
 
-    AActor* ClosestTarget = nullptr;
-    float MinDistSq = RangeSq;
-    bool bInRange = false;
-    bool bInAttackRange = false;
+	const TArray<TWeakObjectPtr<AActor>>& EnemyList = UnitSubSystem->GetUnitsByTeam(EnemyTag);
 
-    FVector MyLocation = ControllPawn->GetActorLocation();
+	AActor* ClosestTarget = nullptr;
+	float MinDistSq = RangeSq;
+	bool bInRange = false;
+	bool bInAttackRange = false;
 
-    for (const TWeakObjectPtr<AActor>& EnemyPtr : EnemyList)
-    {
-        AActor* Enemy = EnemyPtr.Get();
-        if (!Enemy) continue;
+	FVector MyLocation = ControllPawn->GetActorLocation();
+	for (const TWeakObjectPtr<AActor>& EnemyPtr : EnemyList)
+	{
+		AActor* Enemy = EnemyPtr.Get();
+		if (!Enemy) continue;
 
-        float DistSq = FVector::DistSquared(MyLocation, Enemy->GetActorLocation());
+		float DistSq = FVector::DistSquared(MyLocation, Enemy->GetActorLocation());
 
-        if (DistSq <= MinDistSq)
-        {
-            MinDistSq = DistSq;
-            ClosestTarget = Enemy;
-            bInRange = true;
-        }
-    }
+		if (DistSq <= MinDistSq)
+		{
+			MinDistSq = DistSq;
+			ClosestTarget = Enemy;
+			bInRange = true;
+		}
+	}
 
-    if (bInRange && ClosestTarget)
-    {
-        if (MinDistSq <= AttackRangeSq)
-        {
-            bInAttackRange = true;
-        }
-    }
+	if (bInRange && ClosestTarget)
+	{
+		if (MinDistSq <= AttackRangeSq)
+		{
+			bInAttackRange = true;
+		}
+	}
 
-    Blackboard->SetValueAsObject(TargetActorKey.SelectedKeyName, ClosestTarget);
-    Blackboard->SetValueAsBool(IsInRangeKey.SelectedKeyName, bInRange);
-    Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bInAttackRange);
+	Blackboard->SetValueAsObject(TargetActorKey.SelectedKeyName, ClosestTarget);
+	Blackboard->SetValueAsBool(IsInRangeKey.SelectedKeyName, bInRange);
+	Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bInAttackRange);
 
-    if (AIC)
-    {
-        // 적을 발견하면 Combat, 없으면 Move 상태로 변경
-        AIC->SetUnitState(bInRange ? EUnitState::Combat : EUnitState::Move);
-    }
+	DrawDebugCircle(
+		GetWorld(),
+		ControllPawn->GetActorLocation(), // 원의 중심 (내 위치)
+		AttackRange,                     // 반지름 (공격 사거리)
+		32,                              // 선의 세그먼트 수 (높을수록 매끄러움)
+		FColor::Red,                     // 색상 (공격 사거리는 보통 빨간색)
+		false,                           // 영구 유지 여부 (false면 다음 프레임에 사라짐)
+		-1.f,                            // 지속 시간 (Tick에서 그리므로 -1이면 1프레임만 유지)
+		0,                               // Depth Priority
+		2.0f,                            // 선 두께
+		FVector(0, 1, 0),                // 원이 그려질 평면의 법선 (Y축)
+		FVector(1, 0, 0),                // 원의 회전축 (X축)
+		false                            // 채우기 여부
+	);
+
+	if (AIC)
+	{
+		AIC->SetUnitState(bInRange ? EUnitState::Combat : EUnitState::Move);
+	}
+
 }

@@ -12,7 +12,6 @@
 ARVOCharacter::ARVOCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
     //AvoidanceRadius = 90.0f;
     //AvoidanceWeight = 0.5f;
     //UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
@@ -113,23 +112,23 @@ void ARVOCharacter::SetAttackTarget(AActor* InTargetActor)
 
 void ARVOCharacter::TestAttack()
 {
-    if (TargetActor)
-    {
-        FVector MyLoc = GetActorLocation();
-        FVector TargetLoc = TargetActor->GetActorLocation();
+    //if (TargetActor)
+    //{
+    //    FVector MyLoc = GetActorLocation();
+    //    FVector TargetLoc = TargetActor->GetActorLocation();
 
-        MyLoc.Z = 0.0f;
-        TargetLoc.Z = 0.0f;
+    //    MyLoc.Z = 0.0f;
+    //    TargetLoc.Z = 0.0f;
 
-        FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(MyLoc, TargetLoc);
+    //    FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(MyLoc, TargetLoc);
 
-        SetActorRotation(LookAtRot);
+    //    SetActorRotation(LookAtRot);
 
-        if (GetController())
-        {
-            GetController()->SetControlRotation(LookAtRot);
-        }
-    }
+    //    if (GetController())
+    //    {
+    //        GetController()->SetControlRotation(LookAtRot);
+    //    }
+    //}
 
     if (AttackMontage)
     {

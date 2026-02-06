@@ -7,7 +7,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Navigation/CrowdFollowingComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-
 ATestDetourCrowdAIController::ATestDetourCrowdAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
@@ -86,12 +85,18 @@ void ATestDetourCrowdAIController::SetUnitState(EUnitState NewState)
 		UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
 		if (CrowdComp)
 		{
-			if (NewState == EUnitState::Combat || NewState == EUnitState::Dead)
+			if (NewState == EUnitState::Combat)
 			{
-				CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low); 
+				//CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low);
+
+			}
+			else if (NewState == EUnitState::Dead)
+			{
+				CrowdComp->SetCrowdSimulationState(ECrowdSimulationState::Disabled);
 			}
 			else
 			{
+				CrowdComp->SetCrowdSimulationState(ECrowdSimulationState::Enabled);
 				CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
 			}
 		}

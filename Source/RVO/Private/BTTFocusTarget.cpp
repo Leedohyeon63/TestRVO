@@ -9,23 +9,41 @@
 UBTTFocusTarget::UBTTFocusTarget()
 {
 	NodeName = "Focus";
+    bNotifyTick = true;
 
 }
 
 EBTNodeResult::Type UBTTFocusTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	return EBTNodeResult::Type();
+    return EBTNodeResult::InProgress;
 }
 
 void UBTTFocusTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+    Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
     AAIController* AIC = OwnerComp.GetAIOwner();
-    ARVOCharacter* Unit = Cast<ARVOCharacter>(AIC ? AIC->GetPawn() : nullptr);
+    if (!AIC || !AIC->GetPawn())
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        return;
+    }
+
+    ARVOCharacter* Unit = Cast<ARVOCharacter>(AIC->GetPawn());
+    if (!Unit)
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        return;
+    }
 
     UObject* TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetKey.SelectedKeyName);
     AActor* TargetActor = Cast<AActor>(TargetObject);
 
-    Unit->FocusTarget(TargetActor, DeltaSeconds, TurnSpeed);
+    if (!TargetActor)
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        return;
+    }
 
     if (Unit->FocusTarget(TargetActor, DeltaSeconds, TurnSpeed))
     {

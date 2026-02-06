@@ -74,7 +74,7 @@ void UWaveComponent::StartAllWaves()
 
 void UWaveComponent::SpawnEnemy(TSubclassOf<ARVOCharacter> EnemyClass)
 {
-    if (EnemyCount > 10)
+    if (EnemyCount > 3)
     {
         return;
     }

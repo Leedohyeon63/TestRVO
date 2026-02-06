@@ -6,35 +6,35 @@
 #include "BehaviorTree/BTService.h"
 #include "BTRangeCheck.generated.h"
 
-/**
- * 
- */
+class ATestDetourCrowdAIController;
+
 UCLASS()
 class RVO_API UBTRangeCheck : public UBTService
 {
 	GENERATED_BODY()
+
 public:
-    UBTRangeCheck();
+	UBTRangeCheck();
 
 protected:
-    virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+private:
+	UPROPERTY(EditAnywhere, Category = "AI|Optimization")
+	float StickinessMultiplier = 1.2f;
 
 public:
-    UPROPERTY(EditAnywhere, Category = "AI")
-    struct FBlackboardKeySelector RangeKey; 
-    
-    UPROPERTY(EditAnywhere, Category = "AI")
-    struct FBlackboardKeySelector AttackRangeKey;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	struct FBlackboardKeySelector RangeKey;
 
-    UPROPERTY(EditAnywhere, Category = "AI")
-    FGameplayTag TargetTag;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	struct FBlackboardKeySelector AttackRangeKey;
 
-    UPROPERTY(EditAnywhere, Category = "AI")
-    struct FBlackboardKeySelector TargetActorKey;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	struct FBlackboardKeySelector TargetActorKey;
 
-    UPROPERTY(EditAnywhere, Category = "AI")
-    struct FBlackboardKeySelector IsInRangeKey;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	struct FBlackboardKeySelector IsInRangeKey;
 
-    UPROPERTY(EditAnywhere, Category = "AI")
-    struct FBlackboardKeySelector IsInAttackRangeKey;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	struct FBlackboardKeySelector IsInAttackRangeKey;
 };
