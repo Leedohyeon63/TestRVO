@@ -95,18 +95,32 @@ void UBTRangeCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 
 	DrawDebugCircle(
 		GetWorld(),
-		ControllPawn->GetActorLocation(), // 원의 중심 (내 위치)
-		AttackRange,                     // 반지름 (공격 사거리)
-		32,                              // 선의 세그먼트 수 (높을수록 매끄러움)
-		FColor::Red,                     // 색상 (공격 사거리는 보통 빨간색)
-		false,                           // 영구 유지 여부 (false면 다음 프레임에 사라짐)
-		-1.f,                            // 지속 시간 (Tick에서 그리므로 -1이면 1프레임만 유지)
-		0,                               // Depth Priority
-		2.0f,                            // 선 두께
-		FVector(0, 1, 0),                // 원이 그려질 평면의 법선 (Y축)
-		FVector(1, 0, 0),                // 원의 회전축 (X축)
-		false                            // 채우기 여부
+		ControllPawn->GetActorLocation(),
+		AttackRange,
+		48,                               // 더 매끄럽게 48 정도로 수정
+		FColor::Red,
+		false,
+		Interval + 0.1f,                  // [핵심] 서비스 실행 주기 + 알파 만큼 유지
+		0,
+		2.0f,
+		FVector(1, 0, 0),                // X축
+		FVector(0, 1, 0),                // Y축
+		false                      // 채우기 여부
 	);
+
+	if (ClosestTarget)
+	{
+		DrawDebugLine(
+			GetWorld(),
+			ControllPawn->GetActorLocation(),
+			ClosestTarget->GetActorLocation(),
+			FColor::Yellow, // 타겟 연결선은 노란색
+			false,
+			Interval + 0.1f,
+			0,
+			1.5f
+		);
+	}
 
 	if (AIC)
 	{

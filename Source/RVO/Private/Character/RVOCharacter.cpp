@@ -42,7 +42,7 @@ void ARVOCharacter::BeginPlay()
     AIController = Cast<AAIController>(GetController());
     if (UUnitSubsystem* Subsystem = GetWorld()->GetSubsystem<UUnitSubsystem>())
     {
-        Subsystem->RegisterUnit(this, UnitTag);
+        Subsystem->RegisterUnit(this, SideTag);
     }
 }
 
@@ -50,7 +50,7 @@ void ARVOCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     if (UUnitSubsystem* Subsystem = GetWorld()->GetSubsystem<UUnitSubsystem>())
     {
-        Subsystem->UnregisterUnit(this, UnitTag);
+        Subsystem->UnregisterUnit(this, SideTag);
     }
 
     Super::EndPlay(EndPlayReason);

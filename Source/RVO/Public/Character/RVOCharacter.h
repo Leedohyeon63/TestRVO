@@ -37,11 +37,17 @@ public:
     virtual void TestAttack();
 
     UPROPERTY(EditAnywhere, Category = "AI")
-    FGameplayTag UnitTag;
+    FGameplayTag SideTag; 
+
+    UPROPERTY(EditAnywhere, Category = "AI")
+    FGameplayTag ElementTag;
+
+    UPROPERTY(EditAnywhere, Category = "AI")
+    FGameplayTag BranchTag;
 
     virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override
     {
-        TagContainer.AddTag(UnitTag);
+        TagContainer.AddTag(SideTag);
     }
 
 public:
