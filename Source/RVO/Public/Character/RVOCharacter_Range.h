@@ -15,12 +15,10 @@ class RVO_API ARVOCharacter_Range : public ARVOCharacter
 	GENERATED_BODY()
 public:
 	ARVOCharacter_Range();
+	virtual void PostInitProperties() override;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	TSubclassOf<AActor> Barrier = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	UAnimMontage* GuardMontage = nullptr;
+	TSubclassOf<AActor> projectile = nullptr;
 
 protected:
 	virtual void TestAttack() override;

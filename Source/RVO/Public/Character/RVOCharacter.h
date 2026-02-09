@@ -55,14 +55,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Movement")
     TObjectPtr<AActor> TargetActor = nullptr;
 
-    //// RVO 회피 설정
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RVO")
-    //float AvoidanceRadius;
-
-    //// RVO 계급 설정
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RVO")
-    //float AvoidanceWeight;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
     TObjectPtr<class UBehaviorTree> SubBTAsset;
 
