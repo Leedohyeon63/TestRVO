@@ -26,10 +26,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = "AI Movement")
     bool FocusTarget(AActor* InTargetActor, float DeltaTime, float TurnSpeed);
 
-    //// RVO 회피 활성화/비활성화
-    //UFUNCTION(BlueprintCallable, Category = "RVO")
-    //void SetRVOAvoidanceEnabled(bool bEnabled);
-
     UFUNCTION(BlueprintCallable, Category = "RVO")
     void SetAttackTarget(AActor* InTargetActor);
 

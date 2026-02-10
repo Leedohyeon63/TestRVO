@@ -21,20 +21,20 @@ class RVO_API UUnitSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-    // À¯´ÖÀÌ ½ºÆùµÉ ¶§ È£ÃâÇÏ¿© µî·Ï
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½
     void RegisterUnit(AActor* Unit, FGameplayTag TeamTag);
 
-    // À¯´ÖÀÌ Á¦°ÅµÉ ¶§ È£ÃâÇÏ¿© ÇØÁ¦
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Åµï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½
     void UnregisterUnit(AActor* Unit, FGameplayTag TeamTag);
 
-    // Æ¯Á¤ Áø¿µÀÇ À¯´Ö ¸®½ºÆ®¸¦ ¹ÝÈ¯
+    // Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È¯
     const TArray<TWeakObjectPtr<AActor>>& GetUnitsByTeam(FGameplayTag TeamTag) const;
 
 private:
-    // Friend/Foe ÅÂ±×º°·Î ¾×ÅÍµéÀ» °ü¸®
+    // Friend/Foe ï¿½Â±×ºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     UPROPERTY()
     TMap<FGameplayTag, FUnitList> TeamUnitsMap;
 
-    // ºó ¹è¿­ ¹ÝÈ¯¿ë (¿¡·¯ ¹æÁö)
+    // ï¿½ï¿½ ï¿½è¿­ ï¿½ï¿½È¯ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     TArray<TWeakObjectPtr<AActor>> EmptyArray;
 };
